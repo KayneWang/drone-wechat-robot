@@ -51,34 +51,47 @@ type (
 	}
 )
 
-func (p Plugin) Exec() error {
-	var b []byte
+type TextContent struct {
+	Content             string   `json:"content"`
+	MentionedList       []string `json:"mentioned_list"`
+	MentionedMobileList []string `json:"mentioned_mobile_list"`
+}
+type MarkdownContent struct {
+	Content string `json:"content"`
+}
 
+func (p Plugin) Exec() error {
 	url := "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=" + p.Config.Key
+
+	var data interface{}
 
 	switch p.Config.MsgType {
 	case "text":
-		type textContent struct {
-			Content             string   `json:"content"`
-			MentionedList       []string `json:"mentioned_list"`
-			MentionedMobileList []string `json:"mentioned_mobile_list"`
-		}
-		text := textContent{
+		text := TextContent{
 			Content:             p.Config.Content,
 			MentionedList:       p.Config.MentionedList,
 			MentionedMobileList: p.Config.MentionedMobileList,
 		}
 
-		data := struct {
+		data = struct {
 			MsgType string      `json:"msgtype"`
-			Text    textContent `json:"text"`
+			Text    TextContent `json:"text"`
 		}{p.Config.MsgType, text}
 
-		b, _ = json.Marshal(data)
+	case "markdown":
+		markdown := MarkdownContent{
+			Content: p.Config.Content,
+		}
+		data = struct {
+			MsgType  string          `json:"msgtype"`
+			Markdown MarkdownContent `json:"markdown"`
+		}{p.Config.MsgType, markdown}
 
 	default:
 		return errors.New("Error: wrong msgtype, you should use either text, markdown, image, news")
 	}
+
+	b, _ := json.Marshal(data)
 
 	request, err := http.NewRequest("POST", url, bytes.NewBuffer(b))
 	if err != nil {
