@@ -43,6 +43,16 @@ func main() {
 			EnvVar: "PLUGIN_MENTIONED_MOBILE_LIST",
 		},
 		cli.StringFlag{
+			Name:   "base64",
+			Usage:  "The image base64 code",
+			EnvVar: "PLUGIN_BASE64",
+		},
+		cli.StringFlag{
+			Name:   "md5",
+			Usage:  "The image md5 code",
+			EnvVar: "PLUGIN_MD5",
+		},
+		cli.StringFlag{
 			Name:   "repo.owner",
 			Usage:  "repository owner",
 			EnvVar: "DRONE_REPO_OWNER",
@@ -167,6 +177,8 @@ func run(c *cli.Context) error {
 			Content:             c.String("content"),
 			MentionedList:       c.StringSlice("mentioned_list"),
 			MentionedMobileList: c.StringSlice("mentioned_mobile_list"),
+			Base64:              c.String("base64"),
+			Md5:                 c.String("md5"),
 		},
 	}
 	return plugin.Exec()

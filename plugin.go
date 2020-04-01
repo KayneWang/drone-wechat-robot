@@ -2,8 +2,6 @@ package main
 
 import (
 	"bytes"
-	"crypto/md5"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -65,8 +63,8 @@ type (
 		Content string `json:"content"`
 	}
 	ImageContent struct {
-		Base64 base64 `json:"base64"`
-		Md5    md5    `json:"md5"`
+		Base64 string `json:"base64"`
+		Md5    string `json:"md5"`
 	}
 )
 
@@ -98,15 +96,9 @@ func (p Plugin) Exec() error {
 		}{p.Config.MsgType, markdown}
 
 	case "image":
-		b64, err := base64.StdEncoding.DecodeString(p.Config.Base64)
-		m5 := md5.Sum([]byte(p.Config.Md5))
-		if err != nil {
-			fmt.Printf("Error: failed to encoding base64")
-			return err
-		}
 		image := ImageContent{
-			Base64: b64,
-			Md5:    m5,
+			Base64: p.Config.Base64,
+			Md5:    p.Config.Md5,
 		}
 		data = struct {
 			MsgType string       `json:"msgtype"`
