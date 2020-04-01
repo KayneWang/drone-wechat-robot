@@ -15,18 +15,19 @@ type (
 	}
 
 	Build struct {
-		Tag     string `json:"tag"`
-		Event   string `json:"event"`
-		Number  int    `json:"number"`
-		Commit  string `json:"commit"`
-		Ref     string `json:"ref"`
-		Branch  string `json:"branch"`
-		Author  string `json:"author"`
-		Message string `json:"message"`
-		Status  string `json:"status"`
-		Link    string `json:"link"`
-		Started int64  `json:"started"`
-		Created int64  `json:"created"`
+		Tag        string `json:"tag"`
+		Event      string `json:"event"`
+		Number     int    `json:"number"`
+		Commit     string `json:"commit"`
+		CommitLink string `json:"commit_link"`
+		Ref        string `json:"ref"`
+		Branch     string `json:"branch"`
+		Author     string `json:"author"`
+		Message    string `json:"message"`
+		Status     string `json:"status"`
+		Link       string `json:"link"`
+		Started    int64  `json:"started"`
+		Created    int64  `json:"created"`
 	}
 
 	Config struct {
@@ -56,6 +57,7 @@ func (p Plugin) Exec() error {
 		text := struct {
 			Content string `json:"content"`
 		}{p.Config.Content}
+
 		data := struct {
 			MsgType string `json:"msgtype"`
 			Text    struct {
