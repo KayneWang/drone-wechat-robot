@@ -32,6 +32,16 @@ func main() {
 			Usage:  "The message content to send",
 			EnvVar: "PLUGIN_CONTENT",
 		},
+		cli.StringSliceFlag{
+			Name:   "mentioned_list",
+			Usage:  "The mentioned user list, eg: @all,kaynewang",
+			EnvVar: "PLUGIN_MENTIONED_LIST",
+		},
+		cli.StringSliceFlag{
+			Name:   "mentioned_mobile_list",
+			Usage:  "The mentioned mobile list, eg: @all,kaynewang",
+			EnvVar: "PLUGIN_MENTIONED_MOBILE_LIST",
+		},
 		cli.StringFlag{
 			Name:   "repo.owner",
 			Usage:  "repository owner",
@@ -152,9 +162,11 @@ func run(c *cli.Context) error {
 			Started: c.Int64("job.started"),
 		},
 		Config: Config{
-			Key:     c.String("key"),
-			MsgType: c.String("msgtype"),
-			Content: c.String("content"),
+			Key:                 c.String("key"),
+			MsgType:             c.String("msgtype"),
+			Content:             c.String("content"),
+			MentionedList:       c.StringSlice("mentioned_list"),
+			MentionedMobileList: c.StringSlice("mentioned_mobile_list"),
 		},
 	}
 	return plugin.Exec()

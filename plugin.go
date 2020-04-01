@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -31,9 +32,11 @@ type (
 	}
 
 	Config struct {
-		Key     string `json:"key"`
-		MsgType string `json:"msgtype"`
-		Content string `json:"content"`
+		Key                 string   `json:"key"`
+		MsgType             string   `json:"msgtype"`
+		Content             string   `json:"content"`
+		MentionedList       []string `json:"mentioned_list"`
+		MentionedMobileList []string `json:"mentioned_mobile_list"`
 	}
 
 	Job struct {
@@ -53,19 +56,28 @@ func (p Plugin) Exec() error {
 
 	url := "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=" + p.Config.Key
 
-	if p.Config.MsgType == "text" {
-		text := struct {
-			Content string `json:"content"`
-		}{p.Config.Content}
+	switch p.Config.MsgType {
+	case "text":
+		type textContent struct {
+			Content             string   `json:"content"`
+			MentionedList       []string `json:"mentioned_list"`
+			MentionedMobileList []string `json:"mentioned_mobile_list"`
+		}
+		text := textContent{
+			Content:             p.Config.Content,
+			MentionedList:       p.Config.MentionedList,
+			MentionedMobileList: p.Config.MentionedMobileList,
+		}
 
 		data := struct {
-			MsgType string `json:"msgtype"`
-			Text    struct {
-				Content string `json:"content"`
-			} `json:"text"`
+			MsgType string      `json:"msgtype"`
+			Text    textContent `json:"text"`
 		}{p.Config.MsgType, text}
 
 		b, _ = json.Marshal(data)
+
+	default:
+		return errors.New("Error: wrong msgtype, you should use either text, markdown, image, news")
 	}
 
 	request, err := http.NewRequest("POST", url, bytes.NewBuffer(b))
