@@ -39,6 +39,10 @@ type (
 		MentionedMobileList []string `json:"mentioned_mobile_list"`
 		Base64              string   `json:"base64"`
 		Md5                 string   `json:"md5"`
+		Title               []string `json:"title"`
+		Description         []string `json:"description"`
+		URL                 []string `json:"url"`
+		Picurl              []string `json:"picurl"`
 	}
 
 	Job struct {
@@ -65,6 +69,12 @@ type (
 	ImageContent struct {
 		Base64 string `json:"base64"`
 		Md5    string `json:"md5"`
+	}
+	ArticleContent struct {
+		Title       string `json:"title"`
+		Description string `json:"description"`
+		URL         string `json:"url"`
+		Picurl      string `json:"picurl"`
 	}
 )
 
@@ -104,6 +114,28 @@ func (p Plugin) Exec() error {
 			MsgType string       `json:"msgtype"`
 			Image   ImageContent `json:"image"`
 		}{p.Config.MsgType, image}
+
+	case "news":
+		al := len(p.Config.Title)
+		if len(p.Config.Description) != al || len(p.Config.URL) != al || len(p.Config.Picurl) != al {
+			return errors.New("Error: when msgtype is news, the article_title,article_description,article_url,article_picurl length should be equal")
+		}
+		var articles []ArticleContent
+		for i := 0; i < al; i++ {
+			articles = append(articles, ArticleContent{
+				Title:       p.Config.Title[i],
+				Description: p.Config.Description[i],
+				URL:         p.Config.URL[i],
+				Picurl:      p.Config.Picurl[i],
+			})
+		}
+		news := map[string][]ArticleContent{
+			"articles": articles,
+		}
+		data = struct {
+			MsgType string                      `json:"msgtype"`
+			News    map[string][]ArticleContent `json:"news"`
+		}{p.Config.MsgType, news}
 
 	default:
 		return errors.New("Error: wrong msgtype, you should use either text, markdown, image, news")

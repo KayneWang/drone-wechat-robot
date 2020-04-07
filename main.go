@@ -52,6 +52,26 @@ func main() {
 			Usage:  "The image md5 code",
 			EnvVar: "PLUGIN_MD5",
 		},
+		cli.StringSliceFlag{
+			Name:   "article_title",
+			Usage:  "The article title when msgtype is news, eg: title1,title2",
+			EnvVar: "PLUGIN_ARTILE_TITLE",
+		},
+		cli.StringSliceFlag{
+			Name:   "article_description",
+			Usage:  "The article description when msgtype is news, eg: desc1,desc2",
+			EnvVar: "PLUGIN_ARTICLE_DESCRIPTION",
+		},
+		cli.StringSliceFlag{
+			Name:   "article_url",
+			Usage:  "The article link url when msgtype is news, eg: www.qq.com,www.baidu.com",
+			EnvVar: "PLUGIN_ARTICLE_URL",
+		},
+		cli.StringSliceFlag{
+			Name:   "article_picurl",
+			Usage:  "The article image url when msgtype is news, eg: http://res.com/pic1.png,http://res/pic2.jpg",
+			EnvVar: "PLUGIN_ARTICLE_PICURL",
+		},
 		cli.StringFlag{
 			Name:   "repo.owner",
 			Usage:  "repository owner",
@@ -179,6 +199,10 @@ func run(c *cli.Context) error {
 			MentionedMobileList: c.StringSlice("mentioned_mobile_list"),
 			Base64:              c.String("base64"),
 			Md5:                 c.String("md5"),
+			Title:               c.StringSlice("article_title"),
+			Description:         c.StringSlice("article_description"),
+			URL:                 c.StringSlice("article_url"),
+			Picurl:              c.StringSlice("article_picurl"),
 		},
 	}
 	return plugin.Exec()
